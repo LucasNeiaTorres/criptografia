@@ -38,10 +38,10 @@ Certifique-se de ter o seguinte instalado em seu sistema:
 Para executar o script, use o seguinte comando:
 
 - Para criptografar um arquivo:
-  ```sh
-  python criptoAES.py enc <arquivo_in> <arquivo_out>
-  ```
+```sh
+python criptoAES.py enc <arquivo_in> <arquivo_out>
+```
 - Para descriptografar um arquivo:
-  ```sh
-    python criptoAES.py dec <arquivo_in> <arquivo_out>
-  ```
+```sh
+python criptoAES.py dec <arquivo_in> <arquivo_out>
+```
