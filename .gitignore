@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+venv/
+.env
+aes_hey.hex
+out.txt
+desc.txt
