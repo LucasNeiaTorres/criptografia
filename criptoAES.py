@@ -1,5 +1,4 @@
-# criptoAES.py
-import os, sys, json
+import os, sys
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Uso:
@@ -44,7 +43,7 @@ def decrypt_file(fin, fout, key):
 
 def main():
     if len(sys.argv) != 4 or sys.argv[1] not in {"enc","dec"}:
-        print("Uso: python aes_openssl.py enc|dec arquivo_in arquivo_out")
+        print("Uso: python criptoAES.py enc|dec arquivo_in arquivo_out")
         sys.exit(1)
 
     mode, fin, fout = sys.argv[1:]
@@ -52,10 +51,10 @@ def main():
 
     if mode == "enc":
         encrypt_file(fin, fout, key)
-        print(f"Arquivo {fin} → {fout} (cifrado).")
+        print(f"Arquivo {fin} -> {fout} (cifrado).")
     else:
         decrypt_file(fin, fout, key)
-        print(f"Arquivo {fin} → {fout} (decifrado).")
+        print(f"Arquivo {fin} -> {fout} (decifrado).")
 
 if __name__ == "__main__":
     main()
