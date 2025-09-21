@@ -6,6 +6,7 @@ import sys
 # primeiro: substituição, depois: transposição
 
 SHIFT = 3  
+KEY = "LUA"  # chave para a transposição
 
 def substitute(char, shift):
     if char.isalpha():
@@ -33,24 +34,31 @@ def substitute(char, shift):
 # Texto cifrado: AERXAQNTTUOE
 
 def transpose(text):
-    pass
+    transposed = text
+    
+    return transposed
 
 def encrypt(text, shift):
     substituted = ''.join(substitute(c, shift) for c in text)
-    return substituted
+    encrypted = transpose(substituted)
+    return encrypted
 
 def decrypt(text, shift):
-    pass
+    decrypted = ''.join(substitute(c, -shift) for c in text)
+    # decrypted = transpose(substituted)
+    return decrypted
 
 def encrypt_file(fin, fout):
-    text = open(fin, "r").read()
+    text = open(fin, encoding="utf-8").read()
     encrypted_text = encrypt(text, SHIFT)
     with open(fout, "w") as f:
         f.write(encrypted_text)
 
-def decrypt_file(fin, fout, key):
-    pass
-
+def decrypt_file(fin, fout):
+    text = open(fin, encoding="utf-8").read()
+    decrypted_text = decrypt(text, SHIFT)
+    with open(fout, "w") as f:
+        f.write(decrypted_text)
 
 def main():
     if len(sys.argv) != 4 or sys.argv[1] not in {"enc","dec"}:
@@ -63,7 +71,7 @@ def main():
         encrypt_file(fin, fout)
         print(f"Arquivo {fin} -> {fout} (cifrado).")
     else:
-        decrypt_file(fin, fout, key)
+        decrypt_file(fin, fout)
         print(f"Arquivo {fin} -> {fout} (decifrado).")
     
 if __name__ == "__main__":
