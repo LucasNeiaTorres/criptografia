@@ -5,12 +5,13 @@ import sys
 
 # primeiro: substituição, depois: transposição
 
+SHIFT = 3  
+
 def substitute(char, shift):
-    # if char.isalpha():
-    #     base = ord('A') if char.isupper() else ord('a')
-    #     return chr((ord(char) - base + shift) % 26 + base)
-    # return char
-    pass
+    if char.isalpha():
+        base = ord('A') if char.isupper() else ord('a')
+        return chr((ord(char) - base + shift) % 26 + base)
+    return char
 
 # Funcionamento da transposição:
 # Texto: ATAQUENORTE
@@ -35,15 +36,35 @@ def transpose(text):
     pass
 
 def encrypt(text, shift):
-    pass
+    substituted = ''.join(substitute(c, shift) for c in text)
+    return substituted
 
 def decrypt(text, shift):
     pass
+
+def encrypt_file(fin, fout):
+    text = open(fin, "r").read()
+    encrypted_text = encrypt(text, SHIFT)
+    with open(fout, "w") as f:
+        f.write(encrypted_text)
+
+def decrypt_file(fin, fout, key):
+    pass
+
 
 def main():
     if len(sys.argv) != 4 or sys.argv[1] not in {"enc","dec"}:
         print("Uso: python mycripto.py enc|dec arquivo_in arquivo_out")
         sys.exit(1)
+        
+    mode, fin, fout = sys.argv[1:]
+    
+    if mode == "enc":
+        encrypt_file(fin, fout)
+        print(f"Arquivo {fin} -> {fout} (cifrado).")
+    else:
+        decrypt_file(fin, fout, key)
+        print(f"Arquivo {fin} -> {fout} (decifrado).")
     
 if __name__ == "__main__":
     main()
