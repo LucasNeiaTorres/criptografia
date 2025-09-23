@@ -1,4 +1,5 @@
 import sys
+from typing import List
 # Uso:
 #   python mycripto.py enc <arquivo_in> <arquivo_out>
 #   python mycripto.py dec <arquivo_in> <arquivo_out>
@@ -6,7 +7,8 @@ import sys
 # primeiro: substituição, depois: transposição
 
 SHIFT = 3  
-KEY = "LUA"  # chave para a transposição
+KEY = "PROPAROXITONA" 
+PAD_CHAR = '_'  
 
 def substitute(char, shift):
     if char.isalpha():
@@ -33,10 +35,69 @@ def substitute(char, shift):
 
 # Texto cifrado: AERXAQNTTUOE
 
-def transpose(text):
-    transposed = text
+def key_to_order(key: str) -> List[int]:
+    key_tuples = [(ch, i) for i, ch in enumerate(key)]
     
-    return transposed
+    sorted_by_char = sorted(key_tuples, key=lambda x: (x[0], x[1]))
+    
+    order = [0] * len(key)
+    for rank, (_, orig_idx) in enumerate(sorted_by_char):
+        order[orig_idx] = rank
+    return order
+
+def order_to_cols(order: List[int]) -> List[int]:
+    cols_by_rank = [None] * len(order)
+    for orig_idx, rank in enumerate(order):
+        cols_by_rank[rank] = orig_idx
+    return cols_by_rank
+
+def transpose(text):
+    n = len(KEY)
+    rows = (len(text) + n - 1) // n 
+    padded_length = rows * n
+    padded_text = text.ljust(padded_length, PAD_CHAR)
+    
+    matrix = [padded_text[i*n:(i+1)*n] for i in range(rows)]
+    
+    order = key_to_order(KEY)
+    cols_by_rank = order_to_cols(order)
+    
+    encrypted = []
+    for rank in range(n):
+        col_idx = cols_by_rank[rank]
+        for row in matrix:
+            encrypted.append(row[col_idx])
+    
+    return ''.join(encrypted)
+
+def transpose_decrypt(text):
+    n = len(KEY)
+    rows = (len(text) + n - 1) // n
+    order = key_to_order(KEY)              # ex: [1,2,0] para LUA
+    cols_by_rank = order_to_cols(order)    # inverso: [2,0,1]
+
+    # Divide o texto em colunas na ordem do ranking
+    col_lengths = [rows] * n
+    columns = []
+    index = 0
+    for _ in range(n):
+        col_text = text[index:index+rows]
+        columns.append(list(col_text))
+        index += rows
+
+    # Reorganizar colunas de volta para ordem original
+    matrix = []
+    for r in range(rows):
+        row = [''] * n
+        for orig_col, rank in enumerate(order):
+            row[orig_col] = columns[rank][r]
+        matrix.append(row)
+
+    # Reconstruir texto linha a linha
+    decrypted = ''.join(''.join(row) for row in matrix)
+    return decrypted.rstrip(PAD_CHAR)
+
+
 
 def encrypt(text, shift):
     substituted = ''.join(substitute(c, shift) for c in text)
@@ -44,8 +105,8 @@ def encrypt(text, shift):
     return encrypted
 
 def decrypt(text, shift):
-    decrypted = ''.join(substitute(c, -shift) for c in text)
-    # decrypted = transpose(substituted)
+    decrypted = transpose_decrypt(text)
+    decrypted = ''.join(substitute(c, -shift) for c in decrypted)
     return decrypted
 
 def encrypt_file(fin, fout):
