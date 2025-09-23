@@ -4,9 +4,7 @@ from typing import List
 #   python mycripto.py enc <arquivo_in> <arquivo_out>
 #   python mycripto.py dec <arquivo_in> <arquivo_out>
 
-# primeiro: substituição, depois: transposição
-
-SHIFT = 3  
+SHIFT = 10 
 KEY = "PROPAROXITONA" 
 PAD_CHAR = '_'  
 
@@ -15,25 +13,6 @@ def substitute(char, shift):
         base = ord('A') if char.isupper() else ord('a')
         return chr((ord(char) - base + shift) % 26 + base)
     return char
-
-# Funcionamento da transposição:
-# Texto: ATAQUENORTE
-# Chave: LUA (ordem alfabética: A=1, L=2, U=3)
-
-# L   U   A
-# ----------
-# A   T   A
-# Q   U   E
-# N   O   R
-# T   E   X   (X = letra de enchimento)
-
-# A = 1ª, L = 2ª, U = 3ª
-
-# Coluna A: A E R X
-# Coluna L: A Q N T
-# Coluna U: T U O E
-
-# Texto cifrado: AERXAQNTTUOE
 
 def key_to_order(key: str) -> List[int]:
     key_tuples = [(ch, i) for i, ch in enumerate(key)]
@@ -73,8 +52,8 @@ def transpose(text):
 def transpose_decrypt(text):
     n = len(KEY)
     rows = (len(text) + n - 1) // n
-    order = key_to_order(KEY)              # ex: [1,2,0] para LUA
-    cols_by_rank = order_to_cols(order)    # inverso: [2,0,1]
+    order = key_to_order(KEY)              
+    cols_by_rank = order_to_cols(order)   
 
     # Divide o texto em colunas na ordem do ranking
     col_lengths = [rows] * n
@@ -100,6 +79,7 @@ def transpose_decrypt(text):
 
 
 def encrypt(text, shift):
+    # primeiro: substituição, depois: transposição
     substituted = ''.join(substitute(c, shift) for c in text)
     encrypted = transpose(substituted)
     return encrypted
