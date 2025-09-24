@@ -5,7 +5,7 @@ from typing import List
 #   python mycripto.py dec <arquivo_in> <arquivo_out>
 
 SHIFT = 10 
-KEY = "PROPAROXITONA" 
+KEY = "VQJYRMZTKLHP" 
 PAD_CHAR = '_'  
 
 def substitute(char, shift):
