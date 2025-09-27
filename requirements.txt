@@ -1,1 +1,4 @@
 cryptography
+pandas 
+matplotlib  
+requests

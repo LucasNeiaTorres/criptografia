@@ -1,3 +1,5 @@
+import pandas as pd
+import matplotlib.pyplot as plt
 import requests
 import os
 import difflib
@@ -6,6 +8,7 @@ import csv
 
 GUTTENBERG_INPUT_URL="https://www.gutenberg.org/cache/epub/10706/pg10706.txt"  # The History of Rome
 SIZES = [5_000, 500_000, 5_000_000]
+CSV_FILE = "resultados.csv"
 
 def generate_inputs():
     response = requests.get(GUTTENBERG_INPUT_URL, stream=True)
@@ -24,7 +27,7 @@ def generate_inputs():
         print(f"Gerado {fname} com {size} bytes.")
     return inputs
 
-def comparar_arquivos(arq1, arq2):
+def compare_files(arq1, arq2):
     with open(arq1, encoding="utf-8") as f1, open(arq2, encoding="utf-8") as f2:
         # strip() remove espaços e quebras de linha no começo/fim
         linhas1 = [linha.rstrip() for linha in f1]
@@ -37,19 +40,51 @@ def comparar_arquivos(arq1, arq2):
         elif line.startswith("+ "):
             print(f"> {line[2:]}")
 
+def generate_graph(csv_file):   
+    df = pd.read_csv(csv_file)
+
+    # --- Gráfico de ENCRIPTAÇÃO ---
+    plt.figure(figsize=(10, 6))
+    x = range(len(df["Tamanho (bytes)"]))
+    width = 0.35
+
+    plt.bar([i - width/2 for i in x], df["MyCripto Enc (s)"], width=width, label="MyCripto Enc")
+    plt.bar([i + width/2 for i in x], df["AES Enc (s)"], width=width, label="AES Enc")
+
+    plt.xticks(x, df["Tamanho (bytes)"], rotation=45)
+    plt.xlabel("Tamanho (bytes)")
+    plt.ylabel("Tempo (segundos)")
+    plt.title("Comparação de Tempo - Encriptação")
+    plt.legend()
+    plt.savefig("comparacao_enc.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+    # --- Gráfico de DECRIPTAÇÃO ---
+    plt.figure(figsize=(10, 6))
+    plt.bar([i - width/2 for i in x], df["MyCripto Dec (s)"], width=width, label="MyCripto Dec")
+    plt.bar([i + width/2 for i in x], df["AES Dec (s)"], width=width, label="AES Dec")
+
+    plt.xticks(x, df["Tamanho (bytes)"], rotation=45)
+    plt.xlabel("Tamanho (bytes)")
+    plt.ylabel("Tempo (segundos)")
+    plt.title("Comparação de Tempo - Decriptação")
+    plt.legend()
+    plt.savefig("comparacao_dec.png", dpi=300, bbox_inches="tight")
+
+
 def show_table_header(writer):
-    writer.writerow(["Arquivo", 
+    writer.writerow(["Tamanho (bytes)", 
                      "MyCripto Enc (s)", "MyCripto Dec (s)", 
                      "AES Enc (s)", "AES Dec (s)"])
 
 def main():
     inputs = generate_inputs()
     
-    with open("resultados.csv", "w", newline="") as csvfile:
+    with open(CSV_FILE, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         show_table_header(writer)
         
-        for input in inputs:
+        for indice, input in enumerate(inputs):
             outputEnc = f"{input}.enc.out"
             outputDec = f"{input}.dec.out"
             
@@ -82,15 +117,17 @@ def main():
             aes_dec_time = time.perf_counter() - start
             
             # Comparação
-            ok_my = comparar_arquivos(input, f"{outputDec}.mycripto")
-            ok_aes = comparar_arquivos(input, f"{outputDec}.aes")
+            ok_my = compare_files(input, f"{outputDec}.mycripto")
+            ok_aes = compare_files(input, f"{outputDec}.aes")
             
             # Salvar linha na tabela
-            writer.writerow([input, 
+            writer.writerow([SIZES[indice], 
                              f"{my_enc_time:.6f}", f"{my_dec_time:.6f}", 
                              f"{aes_enc_time:.6f}", f"{aes_dec_time:.6f}"])
     
-    print("Tabela salva em resultados.csv ✅")
+    print("Tabela salva em", CSV_FILE)  
+    
+    generate_graph(CSV_FILE)
     
 if __name__ == "__main__":
     main()
