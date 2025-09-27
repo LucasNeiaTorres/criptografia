@@ -65,21 +65,21 @@ Certifique-se de ter o seguinte instalado em seu sistema:
 ### AES
 - Para criptografar um arquivo:
 ```sh
-python criptoAES.py enc <arquivo_in> <arquivo_out>
+python3 criptoAES.py enc <arquivo_in> <arquivo_out>
 ```
 - Para descriptografar um arquivo:
 ```sh
-python criptoAES.py dec <arquivo_in> <arquivo_out>
+python3 criptoAES.py dec <arquivo_in> <arquivo_out>
 ```
 
 ### MyCripto
 - Para criptografar um arquivo:
 ```sh
-python mycripto.py enc <arquivo_in> <arquivo_out>
+python3 mycripto.py enc <arquivo_in> <arquivo_out>
 ```
 - Para descriptografar um arquivo:
 ```sh
-python mycripto.py dec <arquivo_in> <arquivo_out>
+python3 mycripto.py dec <arquivo_in> <arquivo_out>
 ```
 
 ## Benchmark
@@ -88,7 +88,7 @@ Ele executa os dois algoritmos (MyCripto e AES), mede os tempos de execução e 
 
 Para executar o benchmark, use o seguinte comando:
 ```sh
-python benchmark.py
+python3 benchmark.py
 ```
 
 Os resultados serão gerados em:
